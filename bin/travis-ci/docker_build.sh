@@ -18,5 +18,5 @@
 set -eo pipefail
 
 # Build image
-docker-compose --file docker-compose.yml --file dc.build.yml build --no-cache nginx-php-moodle
+docker build --no-cache --tag "${DOCKER_REGISTRY_URL}/postfix" .
 docker images
