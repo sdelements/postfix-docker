@@ -1,6 +1,6 @@
 # postfix-docker
 
-This repo deploys `postfix` inside a Docker container. 
+This repo deploys and configures `postfix` inside a Docker container. 
 
 ## Configuration
 
@@ -9,4 +9,4 @@ See `./bin/postfix_init.sh` for configuration parameters that are available via 
 ## Features
 
 * Supervisor to manaage `postfix`, `rsyslog`, and log output to `stdout`
-* Logging with `rsyslog`
+* Logging support is added with `rsyslog`
