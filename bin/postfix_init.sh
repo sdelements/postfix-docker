@@ -18,6 +18,7 @@
 set -eo pipefail
 
 echo "Configuring postfix with any environment variables that are set"
+
 if [[ -n "${POSTFIX_MYNETWORKS}" ]]; then
     echo "Setting custom 'mynetworks' to '${POSTFIX_MYNETWORKS}'"
     postconf mynetworks="${POSTFIX_MYNETWORKS}"
@@ -37,6 +38,35 @@ fi
 echo "Disable chroot for the smtp service"
 postconf -F smtp/inet/chroot=n
 postconf -F smtp/unix/chroot=n
+
+echo "Configuring TLS"
+if [[ "${POSTFIX_TLS}" = "true" ]]; then
+    postconf smtp_tls_CAfile="/etc/ssl/certs/ca-certificates.crt"
+    postconf smtp_tls_security_level="encrypt"
+    postconf smtp_use_tls="yes"
+fi
+
+echo "Configuring SASL Auth"
+if [[ -n "${POSTFIX_SASL_AUTH}" ]]; then
+    if [[ -z "${POSTFIX_RELAYHOST}" || -z "${POSTFIX_TLS}" ]]; then
+        echo "Please set 'POSTFIX_RELAYHOST' AND 'POSTFIX_TLS' before attempting to enable SSL auth."
+        exit 1
+    fi
+
+    postconf smtp_sasl_auth_enable="yes"
+    postconf smtp_sasl_password_maps="hash:/etc/postfix/sasl_passwd"
+    postconf smtp_sasl_security_options="noanonymous"
+
+    # generate the SASL password map
+    echo "${POSTFIX_RELAYHOST} ${POSTFIX_SASL_AUTH}" > /etc/postfix/sasl_passwd
+
+    # generate a .db file and clean it up
+    postmap /etc/postfix/sasl_passwd && rm /etc/postfix/sasl_passwd
+
+    # set permissions
+    chmod 600 /etc/postfix/sasl_passwd.db
+fi
+
 
 echo "Starting postfix in the foreground"
 postfix start-fg
