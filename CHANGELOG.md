@@ -6,11 +6,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [v0.1.2] - 2018-10-25
 ### Added
-- POSTFIX_RELAYHOST_PORT parameter
-- Additional SASL TLS parameter
-
-## [v0.1.2] - 2018-09-25
-### Added
 - TLS support
 - SASL Auth support
 
