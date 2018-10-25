@@ -29,7 +29,7 @@ fi
 
 if [[ -n "${POSTFIX_RELAYHOST}" ]]; then
     echo "Setting custom 'relayhost' to '${POSTFIX_RELAYHOST}'"
-    postconf relayhost="${POSTFIX_RELAYHOST}"
+    postconf relayhost="[${POSTFIX_RELAYHOST}]:${POSTFIX_RELAYHOST_PORT}"
 else
     echo "Revert 'relayhost' to default (unset)"
     postconf -# relayhost
@@ -39,8 +39,8 @@ echo "Disable chroot for the smtp service"
 postconf -F smtp/inet/chroot=n
 postconf -F smtp/unix/chroot=n
 
-echo "Configuring TLS"
 if [[ "${POSTFIX_TLS}" = "true" ]]; then
+    echo "Configuring TLS"
     postconf smtp_tls_CAfile="/etc/ssl/certs/ca-certificates.crt"
     postconf smtp_tls_security_level="encrypt"
     postconf smtp_use_tls="yes"
@@ -56,12 +56,13 @@ if [[ -n "${POSTFIX_SASL_AUTH}" ]]; then
     postconf smtp_sasl_auth_enable="yes"
     postconf smtp_sasl_password_maps="hash:/etc/postfix/sasl_passwd"
     postconf smtp_sasl_security_options="noanonymous"
+    postconf smtp_tls_note_starttls_offer="yes"
 
     # generate the SASL password map
     echo "${POSTFIX_RELAYHOST} ${POSTFIX_SASL_AUTH}" > /etc/postfix/sasl_passwd
 
     # generate a .db file and clean it up
-    postmap /etc/postfix/sasl_passwd && rm /etc/postfix/sasl_passwd
+    postmap hash:/etc/postfix/sasl_passwd && rm /etc/postfix/sasl_passwd
 
     # set permissions
     chmod 600 /etc/postfix/sasl_passwd.db
