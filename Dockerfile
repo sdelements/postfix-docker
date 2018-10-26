@@ -8,6 +8,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update \
     && apt-get install --yes \
+        ca-certificates \
         postfix \
         rsyslog \
         supervisor \

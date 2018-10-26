@@ -10,3 +10,10 @@ See `./bin/postfix_init.sh` for configuration parameters that are available via 
 
 * Supervisor to manaage `postfix`, `rsyslog`, and log output to `stdout`
 * Logging support is added with `rsyslog`
+* TLS Support
+  * Set `POSTFIX_TLS` to `true`
+  * Default: unset/disabled
+* SASL Support
+  * Set `POSTFIX_SASL_AUTH` to `<SMTP_USERNAME>:<SMTP_PASSWORD>`
+  * Requires `POSTFIX_RELAYHOST` and `POSTFIX_TLS`
+  * Default: unset/disabled
