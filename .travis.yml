@@ -1,0 +1,43 @@
+# Define build stages
+stages:
+  - Tests
+  - SDLC Tasks
+  - Build and Publish
+
+# Use minimal image
+language: minimal
+
+jobs:
+  include:
+  - stage: Tests
+    name: Shellcheck
+    env:
+      - SHELLCHECK_OPTS="-e SC1008 -e SC2154"
+    script:
+      - shellcheck $(find . -type f -name '*.sh')
+  - name: Dockerfile linter
+    script:
+      - docker run --rm -v $PWD:/root/ projectatomic/dockerfile-lint dockerfile_lint -f ./Dockerfile
+  - stage: "SDLC Tasks"
+    name: Tag & iteration update
+    sudo: required
+    script:
+      - bash bin/travis-ci/check_tag.sh
+  - stage: Build and Publish
+    name: Docker image
+    env:
+      - secure: gtTzu+h5OXZJmsNTf1HilJqcjqiFgrcepTSh2vwzQ/WEv0ccRI2qz+aWxob9YH05/u23slHyJycQ1mxZzeZF2qWjuDZvQK2jMmZ+dDjW6i5KUsqeWJALVAZNVxJ49cMC91LvkHDFZEj2qEXw69ATrJ3dcs715fmYw3FunSgGvfwcmpR1XjznLEa8A2Zp2byVeMkf2YHp/GB0HqidAl7SvBmEuPpiDG/SuoX4oEoctgZDRNp473LskrdF6aj1JnVhUV3wb7iQCHnLyvW0ssaA73p2O4nw3OcMM+RMTFoPwJw2Oy5Rw8bjFy64gH0i/tiZw7v/Jmo9tVMh63TzPHwBvjg85gWgleYOwLbaJZ1SaT4QbDN4dgwlCPtfboZQBWtOuZzdeCahyRU/Fx1z0mZLWd5vpIXEQwFQw2UsFOA9CUfjAB0bzUGzw6Fiezgdtj21purLepNr1NwYYA8eOU3g19/2EWo8AqDQbPxkFGYKlqUyDC6+gJU06GuHhTmAT6kUcp18mz/vSIdY2kkyOvDKgwcTpPC2RKmfa3HrYFT3srR3meeu8afweJZ+IiDAN1cFrdrKEB/9V6OGy69JlHzjLXjLxXS5qEJAqt2FJcqPeb0ckfGDrfiaSS7EzdjvghkT6fojwN+T6sk+9kOD6zspQWtJKrzJNCI4q3T4oFaQZgQ=
+      - secure: m366bb6pMii/kTSNKzJ9VwVW3sNijYFACMZ5vtear0zXhwjOAsGm32q+Hk7K41FutvIPFEHNNSLuddtPsliNlFH9LaODYQzd2VOJs4vEC6wRNqUWJkXmSztRFshnBGPBSzfQokHxk84pl0Z4lHkBwJBsvXLktoEFCY4NbbphX0o06vuAGDsxipnVG9Ngqx1yArIQrnSxOnzd6tO1QYlHavi4KYfVKxvx6dQJ+9DNZVSlaN7V0RAyEKyO4+HLvWf6QN1MynGV93ObzGnDEeZBjD8CaxoblTuUi2rg4aTHBkyA6t/vRle1HD5byRZ3p5cIz5diTr2VwF5bf6Wvt9xpWdyVCa4YMA3THLJMa+tH6KTbE+wo1b0UzCsjwoCoYHEzO3jznsWhgeNEEAZMppE9QQKzfdgR0Pl1VZ/NpOAHdtelgXPTO+7lhYp3T+GsZFurSrDt8OnUhe1rXxMBlRRmI47jK2pZDhOC5JnnI7ZnQOjDsllN8XTyFA/2FCB7yyrdSoPjeWBKr75GQ/kncZHYi+D3lm7oDyFUqxiJHiQJQfuCnN7DAR8as3zwsWJ21+Ey8fFVsbM1wI0agp2qPm/xRIeFZKmhSNfiUopSwI0F6ceR/E/VWa6agFPUgImqzSWc95cpJjTGaZnIQJqZnupjBNZn7QELjU5noTPQWIkjpDM=
+      - secure: kNyXuhAM13YxKLTik9AHkHxvy/flJVm4jV09eAQoLjV11Jo1/KuHpsO1xpCkAz6/pmmNoccBOK8/4K/sJkiJMgtV+lxcQNFw76CC3bmhSzRiIc2WST8dZMWrJl3qcf1Mv4KRAWSklS+smodhTDegSEsCZlEHdZiePrIXG+4Yhq7AnLe3I/0CGdNLppEf0Rduyx1O0pt9yJp8fZJfhZMNQ/ea37ef+cO5XWO5UwcpgB5IJqTf2/80iiwHDiJ8D6QOnmUlRRYAYFZEGFxt25YA53LR1FBjW7OWSKlFat4L2ewek8d0jfULcSY6ohviHDn+XWV2J2FAw82BD6BE5QFkGSJrt8VEtE0JeoZX+r466v653cM++53E/eRa5StU8SasUByn6wuaNk0J7zGLi87aSEXyDocz8dxA0FGnXiqHQM/FVxLuv1XCD53BWRmexstPqOB+UQpHmLka76khfT48W7Ay9pqgRQymYEqnzBu2WYleBjDxWIaohjiqpvD+JmEqLYMzwZe8w+/UIB0FXp6iSnw93TotT9P24oi2OfnDPlu8DcVlTzqh32i22iQWMEvd03dKaHyDyLt3I2hRJ8ojsMlSI2a07vgI0SsuMXnTBJ+Pb9/KzYVJGrpMfTZWsXdYeHFx6C4CcAFQAL4M/dWw6McNQWxi6Li4swK6LzUaDPU=
+    sudo: required
+    services:
+      - docker
+    script:
+      - bash bin/travis-ci/docker_upgrade.sh
+      - bash bin/travis-ci/docker_build.sh
+    deploy:
+      skip_cleanup: true
+      provider: script
+      script: bash bin/travis-ci/docker_publish.sh
+      on:
+        tags: true
