@@ -17,3 +17,8 @@ See `./bin/postfix_init.sh` for configuration parameters that are available via 
   * Set `POSTFIX_SASL_AUTH` to `<SMTP_USERNAME>:<SMTP_PASSWORD>`
   * Requires `POSTFIX_RELAYHOST` and `POSTFIX_TLS`
   * Default: unset/disabled
+
+## CI Status
+
+* Docker
+* Travis CI
