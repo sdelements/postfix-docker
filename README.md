@@ -21,4 +21,5 @@ See `./bin/postfix_init.sh` for configuration parameters that are available via 
 ## CI Status
 
 * Docker
-* Travis CI
+* Travis CI: [![Build Status](https://travis-ci.org/sdelements/postfix-docker.svg?branch=master)](https://travis-ci.org/sdelements/postfix-docker)
+
