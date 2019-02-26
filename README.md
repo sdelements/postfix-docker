@@ -1,6 +1,6 @@
 # postfix-docker
 
-This repo deploys and configures `postfix` inside a Docker container. 
+This repo deploys and configures `postfix` inside a Docker container
 
 ## Configuration
 
