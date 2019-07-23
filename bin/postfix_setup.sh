@@ -68,6 +68,5 @@ if [[ -n "${POSTFIX_SASL_AUTH}" ]]; then
     chmod 600 /etc/postfix/sasl_passwd.db
 fi
 
-
-echo "Starting postfix in the foreground"
-postfix start-fg
+echo "Configuring logging to stdout"
+postconf maillog_file=/dev/stdout
