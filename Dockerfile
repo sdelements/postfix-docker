@@ -1,24 +1,15 @@
-FROM ubuntu:bionic
+FROM alpine:latest
 
 LABEL name="postfix"
 LABEL version="latest"
 
-# Disable frontend dialogs
-ENV DEBIAN_FRONTEND noninteractive
+RUN apk add --no-cache postfix postfix-pcre bash
 
-RUN apt-get update \
-    && apt-get install --yes \
-        ca-certificates \
-        postfix \
-        rsyslog \
-        supervisor \
-    && apt-get --purge -y autoremove \
-    && apt-get --yes clean \
-    && rm -rf /etc/apt/sources.list.d/temp.list /var/lib/apt/lists/*
+COPY ./bin/postfix_setup.sh /postfix_setup.sh
+COPY ./bin/entrypoint.sh /entrypoint.sh
 
-COPY ./supervisor.conf /etc/supervisor/conf.d/postfix.conf
+RUN chmod u+x /postfix_setup.sh &&\
+    bash /postfix_setup.sh &&\
+    chmod u+x /entrypoint.sh && chown postfix:postfix /entrypoint.sh
 
-COPY ./bin/postfix_init.sh /postfix_init.sh
-RUN chmod u+x /postfix_init.sh
-
-CMD ["/usr/bin/python", "/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+CMD ["/entrypoint.sh"]
