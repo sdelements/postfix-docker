@@ -1,0 +1,20 @@
+ARG UBI_BASE_IMAGE=ubi8
+FROM registry.access.redhat.com/${UBI_BASE_IMAGE}
+
+LABEL name="postfix"
+LABEL version="latest"
+
+RUN dnf -y update \
+    && dnf install -y \
+        ca-certificates \
+        postfix \
+        rsyslog \
+        supervisor \
+    && dnf clean all
+
+COPY ./supervisor.conf /etc/supervisor/conf.d/postfix.conf
+
+COPY ./bin/postfix_init.sh /postfix_init.sh
+RUN chmod u+x /postfix_init.sh
+
+CMD ["/usr/bin/python", "/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
