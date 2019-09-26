@@ -1,16 +1,17 @@
-ARG UBI_BASE_IMAGE=ubi8
+ARG UBI_BASE_IMAGE=ubi7
 FROM registry.access.redhat.com/${UBI_BASE_IMAGE}
 
 LABEL name="postfix"
 LABEL version="latest"
 
-RUN dnf -y update \
-    && dnf install -y \
+RUN yum -y update \
+    && rpm -i https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+    && yum install -y \
         ca-certificates \
         postfix \
         rsyslog \
         supervisor \
-    && dnf clean all
+    && yum clean all
 
 COPY ./supervisor.conf /etc/supervisor/conf.d/postfix.conf
 
